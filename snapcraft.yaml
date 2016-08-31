@@ -1,0 +1,55 @@
+name: minikube
+version: 0.8.0
+summary: Run Kubernetes locally
+description: |
+    Minikube is a tool that makes it easy to run Kubernetes locally. Minikube
+    runs a single-node Kubernetes cluster inside a VM on your laptop for users
+    looking to try out Kubernetes or develop with it day-to-day.
+
+confinement: strict
+
+apps:
+    minikube:
+        command: minikube-wrapper
+        plugs:
+            - network
+            - network-bind
+            - libvirt
+
+    ctl:
+        command: bin/kubectl
+        plugs:
+            - network
+            - network-bind
+
+parts:
+    docker-machine-kvm:
+        plugin: go
+        # TODO: Use upstream, pending
+        #       https://github.com/dhiltgen/docker-machine-kvm/pull/21
+        source: https://github.com/cmars/docker-machine-kvm  
+        source-type: git
+        source-branch: libvirt.1.2.14-dhcp-leases
+        go-importpath: github.com/dhiltgen/docker-machine-kvm
+        go-buildtags: ['libvirt.1.2.14']
+        organize:
+            bin/bin: bin/docker-machine-driver-kvm
+
+    ssh:
+        plugin: nil
+        stage-packages:
+            - openssh-client
+        snap:
+            - etc/ssh/*
+            - usr/bin/*
+            - usr/lib/*
+            - usr/share/*
+
+    copystuff:
+        plugin: dump
+        source: .
+        snap:
+            - minikube-wrapper
+            - bin/*
+        after:
+            - docker-machine-kvm
