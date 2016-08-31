@@ -3,9 +3,9 @@
 This project builds a [snap](http://snapcraft.io/) package of
 [minikube](https://github.com/kubernetes/minikube).
 
-_Note that this snap depends on a `libvirt` interface, which is currently proposed
-into `snapd`, but has not released yet. Until it has, I'm afraid this isn't quite
-ready for general consumption._
+_Note that for strict confinement, this snap depends on a `libvirt` interface,
+which is currently proposed into `snapd`, but has not released yet. Until it
+has, I'm afraid this isn't quite ready for general consumption._
 
 # Install
 
@@ -37,10 +37,11 @@ Will install `minikube` as `/snap/bin/minikube` and `kubectl` as
 Note that minikube and kubectl are snap-confined, so will store configuration,
 image and state files under `/snap/minikube/...`.
 
-Some scripts expect `kubectl` in your `$PATH`. It may be helpful to create a
-symbolic link to `minikube.ctl`.
-
 # Known Issues
 
+Some scripts expect `kubectl` in your `$PATH`. It may be helpful to create a
+symbolic link called `kubectl` to `/snap/bin/minikube.ctl`.
+
+With `confinement: strict`:
 - `minikube dashboard` can't currently open a browser. `minikube dashboard --url` works, however.
 - `minikube delete` will remove the VM, but fails to clean up files under `/snap/minikube/...` owned by root.
