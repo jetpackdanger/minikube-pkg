@@ -6,8 +6,7 @@ description: |
     runs a single-node Kubernetes cluster inside a VM on your laptop for users
     looking to try out Kubernetes or develop with it day-to-day.
 
-#confinement: strict
-confinement: devmode
+confinement: strict
 
 apps:
     minikube:
@@ -15,7 +14,7 @@ apps:
         plugs:
             - network
             - network-bind
-            #- libvirt
+            - libvirt
 
     ctl:
         command: bin/kubectl
