@@ -33,6 +33,20 @@ parts:
             - usr/lib/*
             - usr/share/*
 
+    docker-machine-kvm:
+        plugin: go
+        # TODO: Use upstream, pending
+        #       https://github.com/dhiltgen/docker-machine-kvm/pull/21
+        source: https://github.com/cmars/docker-machine-kvm
+        source-type: git
+        source-branch: libvirt.1.2.14-dhcp-leases
+        go-importpath: github.com/dhiltgen/docker-machine-kvm
+        go-buildtags: ['libvirt.1.2.14']
+        organize:
+            bin/bin: bin/docker-machine-driver-kvm
+        build-packages:
+            - libvirt-dev
+
     copystuff:
         plugin: dump
         source: .
