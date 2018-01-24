@@ -8,7 +8,7 @@ unset SSH_AUTH_SOCK
 # Default to KVM driver
 extra=""
 if [[ "$*" =~ start && ! "$*" =~ --vm-driver ]]; then
-	extra="--vm-driver=kvm"
+	extra="--vm-driver=kvm2"
 fi
 
 exec ${SNAP}/bin/minikube $@ $extra
