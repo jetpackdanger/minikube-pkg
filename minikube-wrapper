@@ -8,10 +8,10 @@ export HOME=${SNAP_USER_COMMON}
 # Prevents confined execution from failing due to inaccessible SSH agent socket.
 unset SSH_AUTH_SOCK
 
-# Default to KVM driver
+# Default to kvm2 driver
 extra=""
 if [[ "$*" =~ start && ! "$*" =~ --vm-driver ]]; then
-	extra="--vm-driver=kvm"
+	extra="--vm-driver=kvm2"
 fi
 
 exec ${SNAP}/bin/minikube $@ $extra
