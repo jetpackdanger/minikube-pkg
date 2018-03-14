@@ -12,6 +12,7 @@ apps:
     minikube:
         command: minikube-wrapper
         plugs:
+            - home
             - network
             - network-bind
             - libvirt
