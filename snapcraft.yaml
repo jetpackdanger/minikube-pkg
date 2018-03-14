@@ -1,5 +1,5 @@
 name: minikube
-version: 0.24.1
+version: 0.25.0
 summary: Run Kubernetes locally
 description: |
     Minikube is a tool that makes it easy to run Kubernetes locally. Minikube

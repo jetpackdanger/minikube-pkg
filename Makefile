@@ -1,6 +1,6 @@
 
 K8S_VERSION=v1.3.0
-MINIKUBE_VERSION=v0.24.1
+MINIKUBE_VERSION=v0.25.0
 DOCKER_MACHINE_KVM_VERSION=v0.7.0
 
 BINS=bin/kubectl bin/minikube bin/docker-machine-driver-kvm2
