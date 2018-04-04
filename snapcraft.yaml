@@ -7,12 +7,12 @@ description: |
     looking to try out Kubernetes or develop with it day-to-day.
 
 confinement: strict
+grade: stable
 
 apps:
     minikube:
         command: minikube-wrapper
         plugs:
-            - home
             - network
             - network-bind
             - libvirt
@@ -24,20 +24,53 @@ apps:
             - network-bind
 
 parts:
+    go:
+        source-tag: go1.9.5
+
+    minikube:
+        after: [go]
+        plugin: go
+        source: https://github.com/kubernetes/minikube.git
+        source-depth: 1         # life is short
+        go-importpath: k8s.io/minikube
+        build-packages:
+          - libvirt-dev
+        build: |
+          # "-e" causes realpath to fail if the directory does not exist, so
+          # so we'll exit here if the plugin changes how it manages sources
+          export GOPATH=$(realpath -e ../go)
+          cd $GOPATH/src/k8s.io/minikube
+          # disable chown in drivers.MakeDiskImage; it's a nop
+          # when unconfined, but yields SIGSYS when confined
+          echo H4sIAAxexFoAA41Sy27bMBA8W1+x1cmq9YyTNGgRIGgNtGnTIrDRc0BRS3lhShRIKo8W+feSkt04BgzkQJC7XM7sDLciISBJarLAsm5TZ5Wme9Rmt6e1gvLIRUBthY9wxvicz8uLIk3zvEQhiqqAIs/PT0+DJEmO4gaz2ew49tUVJMWHuMhh5rYLcLGkhiyzpFoDvaPWYNcIN8SxNZgG0DG+YTXCFiWAAKjplLYwDZJJSCoj1VuSYQCTUJlh65hdZ4Ik+kPoy8yT4Uz6In/vjFn3ZcpVk3Gp+kpIpjHjwhiZSVWHBzWV4hvUWcP4mlrMJJW747apcBSWn8UnhVOWz+NzL030LYefbIMLMpvrxqmYVvB+Z8dnZnAxnGMolbInI83v5Q0Yq6mtY6jcuxX9QaDWRoCurQkJQK3h4yVwjczikj28oHd9KYmvVt9+4NOtkz6tohHEBy9w0acB490ltCThr4edaLS9bn3eh8/Osz0qQY+3qBsyxn/TtEqXaJS8x5VVGgeiMA2jQ9jkNWwywvq1zbqyIHFxkAxOHbD4v9s6EXkApQdMZdIva/XQDvcxbD82/eogqZpGrzJY+1TkXvlhMDHceTXjvDgNrFqQHnCGEkdwF4PwJZq1buSGR6MQ0Y0+jCOVfle0a0Ckv1iDI8ueZf/bFN3bmnyDeTCsPfPgOfgHJftK5usDAAA= | base64 -d | zcat | patch -p1
+          make
+          make out/docker-machine-driver-kvm2
+        install: |
+          # "-e" causes realpath to fail if the directory does not exist, so
+          # so we'll exit here if the plugin changes how it manages sources
+          export GOPATH=$(realpath -e ../go)
+          cd $GOPATH/src/k8s.io/minikube
+          mkdir $SNAPCRAFT_PART_INSTALL/bin
+          cp -a out/minikube out/docker-machine-driver-kvm2 $SNAPCRAFT_PART_INSTALL/bin
+        prime:
+            - bin/*
+
     ssh:
+        after: [minikube]
         plugin: nil
         stage-packages:
             - openssh-client
-        snap:
+        prime:
             - etc/ssh/*
             - usr/bin/*
             - usr/lib/*
             - usr/share/*
 
     copystuff:
+        after: [minikube]
         plugin: dump
         source: .
-        snap:
+        prime:
             - minikube-wrapper
             - bin/*
             - lib/*
@@ -45,6 +78,8 @@ parts:
             - usr/lib/*
             - usr/share/*
         stage-packages:
+          # not sure who this is for, but snapcraft warned about it
+          - libdb5.3
           # docker-machine-driver-kvm2's 16.04 dependencies
           - libapparmor1
           - libasn1-8-heimdal
