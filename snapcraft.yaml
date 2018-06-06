@@ -25,23 +25,21 @@ apps:
 
 parts:
     go:
+        source-depth: 1
         source-tag: go1.9.5
 
     kubectl:
         after: [go]
-        plugin: go
+        plugin: make
         source: https://github.com/kubernetes/kubernetes.git
         source-depth: 1
         source-tag: v1.10.3
-        go-importpath: k8s.io/kubernetes
-        build: |
-          # "-e" causes realpath to fail if the directory does not exist, so
-          # so we'll exit here if the plugin changes how it manages sources
-          export GOPATH=$(realpath -e ../go)
-          cd $GOPATH/src/k8s.io/kubernetes
-          make kubectl
+        artifacts:
+          - _output/local/go/bin/kubectl
+        make-parameters: [kubectl]
         install: |
-          cp -a _output/local/go/bin/kubectl $SNAPCRAFT_PART_INSTALL/bin
+          mkdir $SNAPCRAFT_PART_INSTALL/bin
+          mv $SNAPCRAFT_PART_INSTALL/_output/local/go/bin/kubectl $SNAPCRAFT_PART_INSTALL/bin
         prime:
             - bin/*
 
