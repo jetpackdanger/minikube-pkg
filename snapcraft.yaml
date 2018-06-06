@@ -1,5 +1,5 @@
 name: minikube
-version: 0.25.0
+version: 0.27.0
 summary: Run Kubernetes locally
 description: |
     Minikube is a tool that makes it easy to run Kubernetes locally. Minikube
@@ -45,6 +45,7 @@ parts:
         plugin: go
         source: https://github.com/kubernetes/minikube.git
         source-depth: 1
+        source-tag: v0.27.0
         go-importpath: k8s.io/minikube
         build-packages:
           - libvirt-dev
