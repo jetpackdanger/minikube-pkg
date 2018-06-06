@@ -27,11 +27,24 @@ parts:
     go:
         source-tag: go1.9.5
 
+    kubectl:
+        after: [go]
+        plugin: go
+        source: https://github.com/kubernetes/kubernetes.git
+        source-depth: 1
+        source-tag: v1.10.3
+        build: |
+          make kubectl
+        install: |
+          cp -a _output/local/go/bin/kubectl $SNAPCRAFT_PART_INSTALL/bin
+        prime:
+            - bin/*
+
     minikube:
         after: [go]
         plugin: go
         source: https://github.com/kubernetes/minikube.git
-        source-depth: 1         # life is short
+        source-depth: 1
         go-importpath: k8s.io/minikube
         build-packages:
           - libvirt-dev
